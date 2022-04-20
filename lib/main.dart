@@ -3,6 +3,7 @@ import 'package:vexana/vexana.dart';
 import 'package:vexena_demo/core/network/NetWorkManager.dart';
 import 'package:vexena_demo/model/foundation_model.dart';
 import 'package:vexena_demo/extensions/size_extensions.dart';
+import 'package:vexena_demo/service/Foundation_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,22 +28,20 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  FoundationService _foundationService = FoundationService();
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text("Vexena Demo Project"),
       ),
       body: FutureBuilder(
-        future: fetchData(),
+        future: _foundationService.fetchData(),
         builder:
             (BuildContext context, AsyncSnapshot<List<Foundation>?>? snapshot) {
           if (snapshot != null && snapshot.hasData) {
@@ -86,14 +85,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
-
-Future<List<Foundation>?> fetchData() async {
-  DemoNetworkManager foundationService = DemoNetworkManager();
-
-  final response = await foundationService.networkManager
-      ?.send<Foundation, List<Foundation>>("/comments",
-          parseModel: Foundation(), method: RequestType.GET);
-
-  return response?.data;
 }
